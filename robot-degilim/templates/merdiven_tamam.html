@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Tebrikler!{% endblock %}
+{% block content %}
+<div class="card text-center">
+    <div class="card-body">
+        <div class="display-1 text-success mb-4">🎉</div>
+        <h1 class="card-title">Tebrikler {{ username }}!</h1>
+        <p class="card-text lead">7 seviyeli merdiven oyununu başarıyla tamamladınız!</p>
+        <p class="card-text">
+            <strong>Seviye:</strong> {{ level }}/7<br>
+            <strong>En Yüksek Combo:</strong> {{ current_user.merdiven_combo }}
+        </p>
+
+        <div class="mt-4">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg me-2">📊 Dashboard'a Dön</a>
+            <a href="{{ url_for('merdiven_sifirla') }}" class="btn btn-outline-primary btn-lg">🔄 Tekrar Oyna</a>
+        </div>
+
+        <div class="mt-4">
+            <div class="alert alert-info">
+                <strong>🏆 Başarılı!</strong> Tüm seviyeleri tamamladınız. Admin panelinde tamamlayanlar listesinde
+                görüneceksiniz.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Kayıt{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title text-center mb-4">Kayıt Ol</h2>
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">Kullanıcı adı</label>
+                <input name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Şifre (en az 7 karakter, büyük/küçük harf ve rakam içermeli)</label>
+                <input name="password" type="password" class="form-control" required>
+                <small class="form-text text-muted">Şifreniz en az 7 karakter uzunluğunda olmalı ve büyük harf, küçük
+                    harf ve rakam içermelidir.</small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Ben robot değilim - CAPTCHA</label>
+                <div class="d-flex align-items-center mb-2">
+                    <img src="{{ url_for('captcha') }}" alt="captcha" class="me-2">
+                </div>
+                <input name="captcha" class="form-control" placeholder="CAPTCHA kodunu girin" required>
+            </div>
+            <button class="btn btn-success w-100 mb-3" type="submit">Kayıt Ol</button>
+            <div class="text-center">
+                <a href="{{ url_for('login') }}" class="text-decoration-none">Zaten hesabınız var mı? Giriş yapın</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

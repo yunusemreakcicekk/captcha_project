@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block title %}Admin Panel{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title">Admin Panel</h1>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary mb-4">Dashboard'a Dön</a>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Bugün Giriş Yapan Kullanıcılar</h5>
+                        {% if today_logins %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Kullanıcı</th>
+                                        <th>IP</th>
+                                        <th>Zaman</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for login in today_logins %}
+                                    <tr>
+                                        <td>{{ login.details.split(': ')[1] if login.details else 'Bilinmiyor' }}</td>
+                                        <td>{{ login.ip_address }}</td>
+                                        <td>{{ login.log_time.strftime('%H:%M') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted">Bugün giriş yapan kullanıcı yok.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Merdiveni Tamamlayanlar</h5>
+                        {% if tamamlayanlar %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Kullanıcı</th>
+                                        <th>Seviye</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in tamamlayanlar %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.merdiven_seviye }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted">Henüz merdiveni tamamlayan yok.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Banlı IP Listesi</h5>
+                {% if ip_list %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>IP Adresi</th>
+                                <th>Deneme Sayısı</th>
+                                <th>Kalan Süre</th>
+                                <th>Ban Bitiş</th>
+                                <th>Sebep</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ip in ip_list %}
+                            <tr>
+                                <td>{{ ip.ip }}</td>
+                                <td>{{ ip.count }}</td>
+                                <td>{{ ip.remaining }}</td>
+                                <td>{{ ip.ban_end.strftime('%H:%M') }}</td>
+                                <td>{{ ip.reason }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">Aktif ban bulunmamaktadır.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Merdiven Oyunu İstatistikleri</h5>
+                {% if merdiven_istatistik %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Kullanıcı</th>
+                                <th>Seviye</th>
+                                <th>Combo</th>
+                                <th>Tamamlandı</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for istatistik in merdiven_istatistik %}
+                            <tr>
+                                <td>{{ istatistik.username }}</td>
+                                <td>{{ istatistik.seviye }}</td>
+                                <td>{{ istatistik.combo }}</td>
+                                <td>{{ '✅' if istatistik.tamamlandi else '❌' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">Henüz merdiven oyunu istatistiği yok.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Son Log Kayıtları</h5>
+                {% if logs %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Zaman</th>
+                                <th>IP</th>
+                                <th>Eylem</th>
+                                <th>Detaylar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <td>{{ log.log_time.strftime('%H:%M') }}</td>
+                                <td>{{ log.ip_address }}</td>
+                                <td>{{ log.action }}</td>
+                                <td>{{ log.details[:50] }}{% if log.details|length > 50 %}...{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">Log kaydı bulunmamaktadır.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

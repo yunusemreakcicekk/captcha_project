@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Erişim Engellendi{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body text-center">
+        <div class="display-1 text-danger mb-4">🚫</div>
+        <h2 class="card-title">Erişim Engellendi</h2>
+
+        <div class="alert alert-danger">
+            <p><strong>IP adresiniz ({{ ip }}) geçici olarak engellenmiştir.</strong></p>
+            <p><strong>Sebep:</strong> Çok fazla başarısız giriş denemesi</p>
+            <p><strong>Kalan süre:</strong> {{ remaining_time }}</p>
+            <p><strong>Engel kalkış saati:</strong> {{ ban_end.strftime('%H:%M:%S') }}</p>
+        </div>
+
+        <div class="alert alert-warning">
+            <h5>🚨 Güvenlik Önlemi</h5>
+            <p>3 dakika içinde 7'den fazla başarısız giriş denemesi yapıldığı için erişim engellendi.</p>
+            <p>Lütfen {{ remaining_time }} sonra tekrar deneyin.</p>
+        </div>
+
+        <a href="{{ url_for('login') }}" class="btn btn-primary mt-3">Giriş Sayfasına Dön</a>
+    </div>
+</div>
+
+<!-- Otomatik yönlendirme -->
+<script>
+    // Ban süresi dolunca otomatik yönlendir
+    setTimeout(() => {
+        window.location.href = "{{ url_for('login') }}";
+    }, 180000); // 3 dakika sonra
+</script>
+{% endblock %}

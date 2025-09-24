@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Merdiven Oyunu - Seviye {{ level }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .merdiven-container {
+            position: relative;
+            width: 100px;
+            height: 200px;
+            border-left: 3px solid #000;
+            margin: 20px auto;
+        }
+
+        .adam {
+            position: absolute;
+            left: 25px;
+            font-size: 30px;
+            transition: bottom 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Merdiven Oyunu - Seviye {{ level }}/7</h1>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Dashboard'a Dön</a>
+        </div>
+
+        <div class="text-center">
+            <div class="progress mb-3">
+                <div class="progress-bar" role="progressbar" style="width: {{ (level/7)*100 }}%;">
+                    Seviye {{ level }}/7
+                </div>
+            </div>
+
+            {% if combo > 0 %}
+            <div class="alert alert-warning">
+                <strong>Combo: {{ combo }}</strong>
+            </div>
+            {% endif %}
+
+            <div class="merdiven-container">
+                <div class="adam" style="bottom: {{ (level-1) * 28 }}px;">🧍</div>
+                {% for i in range(7) %}
+                <div
+                    style="position: absolute; left: 0; bottom: {{ i * 28 }}px; width: 100px; height: 3px; background: #000;">
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h4>{{ question.soru }}</h4>
+                    <div class="answers">
+                        {% for cevap in question.cevaplar %}
+                        <button class="btn btn-outline-primary m-1 answer-btn" data-cevap="{{ loop.index0 }}">
+                            {{ cevap }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                Kalan deneme hakkı: <strong id="attemptsLeft">{{ attempts_left }}</strong>/10
+            </div>
+
+            <div id="resultMessage"></div>
+        </div>
+    </div>
+
+    <!-- ... önceki kodlar aynı ... -->
+
+    <script>
+        document.querySelectorAll('.answer-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const cevap = this.dataset.cevap;
+                const buttons = document.querySelectorAll('.answer-btn');
+                buttons.forEach(btn => btn.disabled = true);
+
+                fetch("{{ url_for('merdiven_cevap') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'cevap=' + cevap
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const resultMessage = document.getElementById('resultMessage');
+
+                        if (data.dogru) {
+                            resultMessage.className = 'alert alert-success';
+                            resultMessage.innerHTML = '<h4>🎉 Doğru Cevap!</h4><p>Bir üst seviyeye geçtiniz. Combo: ' + data.combo + '</p>';
+                            resultMessage.style.display = 'block';
+
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            if (data.sifirla) {
+                                resultMessage.className = 'alert alert-danger';
+                                // DÜZELTME: merdiven_sifirla route'una yönlendir
+                                resultMessage.innerHTML = '<h4>❌ Oyun Bitti!</h4><p>' + data.mesaj + '</p><a href="{{ url_for("merdiven_sifirla") }}" class="btn btn-warning mt-2">Yeniden Dene</a>';
+                            } else {
+                                resultMessage.className = 'alert alert-danger';
+                                resultMessage.innerHTML = '<h4>❌ Yanlış Cevap!</h4><p>' + data.mesaj + ' Kalan deneme hakkı: ' + data.deneme_hakki + '</p>';
+                                document.getElementById('attemptsLeft').textContent = data.deneme_hakki;
+                            }
+                            resultMessage.style.display = 'block';
+
+                            setTimeout(() => {
+                                buttons.forEach(btn => btn.disabled = false);
+                            }, 2000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Hata:', error);
+                        buttons.forEach(btn => btn.disabled = false);
+                    });
+            });
+        });
+    </script>
+</body>
+
+</html>

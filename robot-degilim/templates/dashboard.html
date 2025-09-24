@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">Hoşgeldin, {{ current_user.username }}! 👋</h2>
+
+        <!-- Merdiven Oyunu İstatistikleri -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Merdiven Oyunu</h5>
+                        <p class="card-text">
+                            Mevcut Seviye: <strong>{{ merdiven_seviye }}/7</strong><br>
+                            En Yüksek Combo: <strong>{{ merdiven_combo }}</strong>
+                        </p>
+                        <a href="{{ url_for('merdiven_oyunu') }}" class="btn btn-light">🎮 Oyunu Oyna</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Hesap İşlemleri</h5>
+                        <p class="card-text">Hesap yönetimi ve güvenlik ayarları</p>
+                        <a href="{{ url_for('logout') }}" class="btn btn-light">🚪 Çıkış Yap</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oyun İlerleme Durumu -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Oyun İlerlemeniz</h5>
+                <div class="progress mb-3" style="height: 30px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                        style="width: {{ (merdiven_seviye/7)*100 }}%;" aria-valuenow="{{ merdiven_seviye }}"
+                        aria-valuemin="0" aria-valuemax="7">
+                        Seviye {{ merdiven_seviye }}/7 ({{ ((merdiven_seviye/7)*100)|round|int }}%)
+                    </div>
+                </div>
+
+                {% if merdiven_seviye >= 7 %}
+                <div class="alert alert-success">
+                    <strong>🎉 Tebrikler!</strong> Tüm seviyeleri tamamladınız!
+                </div>
+                {% elif merdiven_seviye > 0 %}
+                <div class="alert alert-info">
+                    <strong>🚀 Harika!</strong> {{ merdiven_seviye }}. seviyedesiniz. Devam edin!
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <strong>🎯 Henüz başlamadınız!</strong> Merdiven oyununu oynayarak seviyeleri tamamlayın.
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('merdiven_oyunu') }}" class="btn btn-primary btn-lg">
+                    {% if merdiven_seviye >= 7 %}
+                    🔄 Tekrar Oyna
+                    {% else %}
+                    🎮 Oyunu Başlat
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+        {% if current_user.username == 'admin' %}
+        <div class="mt-4">
+            <a href="{{ url_for('admin') }}" class="btn btn-warning">👑 Admin Paneli</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
